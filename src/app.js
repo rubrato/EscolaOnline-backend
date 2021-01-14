@@ -21,17 +21,20 @@ class App {
 
     socket() {
         this.io = io(this.server, {cors : { 'origins': '*:*'}});
+        let contAnswer = 0;
 
         this.io.on('connection', socket => {
             const { user_id } = socket.handshake.query;
             this.connectedUsers[user_id] = socket.id;
 
             socket.on('sendQuestion', (question) =>{
+                contAnswer = 0;
                 this.io.emit('question', question, this.io.engine.clientsCount - 1);
             });
 
             socket.on('sendAnswer', () => {
-                this.io.emit('answer');
+                contAnswer = contAnswer + 1;
+                this.io.emit('answer', contAnswer);
             })
 
             socket.on('disconnect', () => {
