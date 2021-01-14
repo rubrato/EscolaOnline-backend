@@ -27,8 +27,12 @@ class App {
             this.connectedUsers[user_id] = socket.id;
 
             socket.on('sendQuestion', (question) =>{
-                this.io.emit('question', question);
+                this.io.emit('question', question, this.io.engine.clientsCount - 1);
             });
+
+            socket.on('sendAnswer', () => {
+                this.io.emit('answer');
+            })
 
             socket.on('disconnect', () => {
                 delete this.connectedUsers[user_id];
