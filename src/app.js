@@ -21,20 +21,30 @@ class App {
 
     socket() {
         this.io = io(this.server, {cors : { 'origins': '*:*'}});
-        let contAnswer = 0;
+        let right = [];
+        let wrong = [];
 
         this.io.on('connection', socket => {
             const { user_id } = socket.handshake.query;
             this.connectedUsers[user_id] = socket.id;
 
             socket.on('sendQuestion', (question) =>{
-                contAnswer = 0;
                 this.io.emit('question', question, this.io.engine.clientsCount - 1);
+                right = [];
+                wrong = [];
             });
 
-            socket.on('sendAnswer', () => {
-                contAnswer = contAnswer + 1;
-                this.io.emit('answer', contAnswer);
+            socket.on('sendAnswer', (answer) => {
+                if (answer.answer){
+                    right.push(answer.name);
+                } else {
+                    wrong.push(answer.name);
+                };
+                this.io.emit('answer', right, wrong);
+            })
+
+            socket.on('showAnswers', () => {
+                this.io.emit('showAnswer')
             })
 
             socket.on('disconnect', () => {
