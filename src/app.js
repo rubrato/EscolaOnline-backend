@@ -47,6 +47,10 @@ class App {
                 this.io.emit('showAnswer')
             })
 
+            socket.on('sendGif', (index) =>{
+                this.io.emit('receiveGif', index);
+            })
+
             socket.on('disconnect', () => {
                 delete this.connectedUsers[user_id];
             });
